@@ -1,0 +1,46 @@
+services:
+  headscale:
+    image: headscale/headscale:v0.28.0
+    container_name: headscale
+    restart: unless-stopped
+    command: serve
+    volumes:
+      - ./headscale-config:/etc/headscale:ro
+      - headscale-data:/var/lib/headscale
+    environment:
+      - TZ=${TZ:-UTC}
+    networks:
+      - internal
+
+  headscale-ui:
+    image: ghcr.io/gurucomputing/headscale-ui:2026.03.17
+    container_name: headscale-ui
+    restart: unless-stopped
+    networks:
+      - internal
+
+  caddy:
+    image: caddy:v2.11.3
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      - DOMAIN=${DOMAIN:?err}
+      - TZ=${TZ:-UTC}
+    networks:
+      - internal
+
+volumes:
+  headscale-data:
+  caddy-data:
+  caddy-config:
+
+networks:
+  internal:
+    driver: bridge

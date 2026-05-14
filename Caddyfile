@@ -1,0 +1,9 @@
+https://{$DOMAIN} {
+    header /web* Access-Control-Allow-Origin *
+    header /web* Access-Control-Allow-Methods "GET, OPTIONS"
+    header /web* Access-Control-Allow-Headers *
+
+    reverse_proxy /web* headscale-ui:8080
+
+    reverse_proxy * headscale:8080
+}
