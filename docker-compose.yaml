@@ -1,6 +1,6 @@
 services:
   headscale:
-    image: headscale/headscale:v0.28.0
+    image: headscale/headscale:${HS_VERSION}
     container_name: headscale
     restart: unless-stopped
     command: serve
@@ -13,14 +13,14 @@ services:
       - internal
 
   headscale-ui:
-    image: ghcr.io/gurucomputing/headscale-ui:2026.03.17
+    image: ghcr.io/gurucomputing/headscale-ui:${UI_VERSION}
     container_name: headscale-ui
     restart: unless-stopped
     networks:
       - internal
 
   caddy:
-    image: caddy:v2.11.3
+    image: caddy:${CADDY_VERSION}
     container_name: caddy
     restart: unless-stopped
     ports:

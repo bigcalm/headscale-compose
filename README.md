@@ -2,15 +2,17 @@
 
 > Created with [OpenCode](https://opencode.ai) using the **Big Pickle** model.
 
-Self-hosted [Headscale](https://headscale.net) (Tailscale control server) with a web UI and automatic HTTPS via Caddy, all running in Docker Compose.
+Self-hosted [Headscale](https://headscale.net) (Tailscale control server) with a web UI and automatic HTTPS via [Caddy](https://caddyserver.com), all running in Docker Compose.
+
+The web UI is [headscale-ui](https://github.com/gurucomputing/headscale-ui) by [Guru Computing](https://github.com/gurucomputing) — a static frontend for managing headscale nodes, users, and routes.
 
 ## Services
 
-| Service | Image | Role |
+| Service | Image (set via `.env`) | Role |
 |---|---|---|
-| headscale | `headscale/headscale:v0.28.0` | Tailscale-compatible coordination server |
-| headscale-ui | `ghcr.io/gurucomputing/headscale-ui:2026.03.17` | Web management UI |
-| caddy | `caddy:v2.11.3` | Reverse proxy with automatic TLS |
+| headscale | `headscale/headscale:\${HS_VERSION}` | Tailscale-compatible coordination server |
+| [headscale-ui](https://github.com/gurucomputing/headscale-ui) | `ghcr.io/gurucomputing/headscale-ui:\${UI_VERSION}` | Web management UI ([Guru Computing](https://github.com/gurucomputing)) |
+| caddy | `caddy:\${CADDY_VERSION}` | Reverse proxy with automatic TLS |
 
 ## Prerequisites
 
@@ -30,11 +32,15 @@ Create an A record for your domain (e.g. `headscale.example.com`) pointing to yo
 cp .env.example .env
 ```
 
-Edit `.env` and set your domain:
+Edit `.env` with your settings:
 
 ```ini
 DOMAIN=headscale.example.com
+BASE_DOMAIN=example.com
 TZ=UTC
+HS_VERSION=v0.28.0
+UI_VERSION=2026.03.17
+CADDY_VERSION=v2.11.3
 ```
 
 Edit `headscale-config/config.yaml` and set:
@@ -201,7 +207,7 @@ The `backups/` directory is gitignored.
 ```
 .
 ├── docker-compose.yaml          # Service definitions
-├── .env                         # Docker Compose variables (DOMAIN, TZ)
+├── .env                         # Docker Compose variables (DOMAIN, versions, TZ)
 ├── .env.example                 # Template for .env
 ├── .gitignore                   # Ignores .env and backups/
 ├── AGENTS.md                    # AI coding assistant instructions
@@ -224,6 +230,29 @@ Docker named volumes (`headscale-data`, `caddy-data`, `caddy-config`).
 The embedded DERP server is disabled by default. The public Tailscale DERP map is used for relay when direct connections cannot be established. If you need a custom DERP server, see the [Headscale DERP docs](https://headscale.net/stable/ref/derp/).
 
 ## Updating
+
+### Checking for newer versions
+
+```bash
+# Check latest headscale release
+docker run --rm headscale/headscale:stable version
+
+# Check latest headscale-ui release
+# Visit: https://github.com/gurucomputing/headscale-ui/releases/latest
+
+# Check latest Caddy release
+docker run --rm caddy:latest version
+```
+
+Once you know the latest versions, update `.env`:
+
+```ini
+HS_VERSION=v0.29.0
+UI_VERSION=2026.04.01
+CADDY_VERSION=v2.12.0
+```
+
+Then pull and restart:
 
 ```bash
 docker compose pull

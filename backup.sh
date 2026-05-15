@@ -18,12 +18,12 @@ fi
 PROJECT="$(docker compose config 2>/dev/null | awk '/^name:/{print $2}')"
 [ -z "$PROJECT" ] && PROJECT="$(basename "$COMPOSE_DIR")"
 
-# Extract image tags for version metadata
+# Extract resolved image tags from docker compose config
 image_tag() {
-  awk -v srv="$1" '
+  docker compose config 2>/dev/null | awk -v srv="$1" '
     $0 ~ "^  " srv ":" {found=1; next}
     found && /^    image:/ {print $2; found=0}
-  ' docker-compose.yaml
+  '
 }
 
 HS_IMAGE="$(image_tag headscale)"

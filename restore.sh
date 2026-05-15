@@ -44,12 +44,12 @@ if [ -f "$RESTORE_SRC/backup.json" ]; then
     sed -n '/"'"$1"'"/s/.*"'"$1"'": "\(.*\)".*/\1/p' "$RESTORE_SRC/backup.json"
   }
 
-  # Extract current image tags from docker-compose.yaml
+  # Extract resolved image tags from docker compose config
   current_tag() {
-    awk -v srv="$1" '
+    docker compose config 2>/dev/null | awk -v srv="$1" '
       $0 ~ "^  " srv ":" {found=1; next}
       found && /^    image:/ {print $2; found=0}
-    ' docker-compose.yaml
+    '
   }
 
   for svc in headscale headscale-ui caddy; do

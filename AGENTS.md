@@ -6,7 +6,7 @@ AI coding assistant instructions for this project.
 
 Docker Compose stack running three services:
 - **headscale** — Tailscale-compatible coordination server
-- **headscale-ui** — web management UI served at `/web`
+- **[headscale-ui](https://github.com/gurucomputing/headscale-ui)** — web management UI served at `/web` (by [Guru Computing](https://github.com/gurucomputing))
 - **caddy** — reverse proxy with automatic TLS, fronting both services on the same domain
 
 ## Commands
@@ -46,7 +46,7 @@ Pass-through: any unrecognised arg runs `docker compose exec headscale headscale
 ```
 .
 ├── docker-compose.yaml          # Service definitions
-├── .env                         # Docker Compose variables (DOMAIN, TZ)
+├── .env                         # Docker Compose variables (DOMAIN, versions, TZ)
 ├── .env.example                 # Template for .env
 ├── .gitignore                   # Ignores .env and backups/
 ├── AGENTS.md                    # This file
@@ -67,6 +67,7 @@ Pass-through: any unrecognised arg runs `docker compose exec headscale headscale
 - **Data is stored in Docker named volumes** — `headscale-data`, `caddy-data`, `caddy-config`. Use `backup.sh` / `restore.sh` to save/restore them.
 - **headscale-ui** is served at `/web` on the same domain as headscale.
 - **Caddyfile** uses `{$DOMAIN}` — the value comes from the `.env` file.
+- **Container image versions** come from `.env` variables (`HS_VERSION`, `UI_VERSION`, `CADDY_VERSION`).
 - **headscale-config/config.yaml** uses hardcoded values — `${DOMAIN}` syntax is not supported by headscale. The user must edit this file and keep `server_url` in sync with `.env`.
 
 ## Headscale config notes
