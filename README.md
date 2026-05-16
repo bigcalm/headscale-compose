@@ -219,7 +219,8 @@ The `backups/` directory is gitignored.
 ├── README.md                    # This file
 ├── headscale-config/
 │   ├── config.yaml              # Headscale configuration
-│   └── acl.hujson               # ACL policy (HuJSON)
+│   ├── acl.hujson               # ACL policy (HuJSON)
+│   └── extra-records.json       # Extra DNS records (auto-generated)
 └── backups/                     # Backup archives (gitignored)
 ```
 
@@ -236,13 +237,19 @@ As a workaround, `generate-dns-records.sh` creates supplementary A/AAAA records 
 old format via `dns.extra_records_path`. Each node gets `hostname.user.base_domain`
 entries so you can reach nodes by the old naming convention.
 
+The records file lives at `headscale-config/extra-records.json` and is bind-mounted
+into the headscale container. It is pre-initialized with an empty record set (`[]`) so
+headscale finds the file at startup, and is included in backups alongside the other
+config files.
+
 ```bash
 # After adding or removing nodes, regenerate the records
 ./headscale.sh rebuild-dns
 ```
 
-Headscale watches the records file for changes and picks them up within seconds — no
-restart needed. Run this script whenever your node roster changes.
+The script writes directly to the host file — headscale's fsnotify watcher detects the
+change and picks up the new records within seconds, no restart needed. Run this script
+whenever your node roster changes.
 
 Caveats:
 - These are **extra** records — the built-in MagicDNS `hostname.base_domain` still exists

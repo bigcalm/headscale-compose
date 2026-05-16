@@ -6,6 +6,7 @@ services:
     command: serve
     volumes:
       - ./headscale-config:/etc/headscale:ro
+      - ./headscale-config/extra-records.json:/etc/headscale/extra-records.json:ro
       - headscale-data:/var/lib/headscale
     environment:
       - TZ=${TZ:-UTC}

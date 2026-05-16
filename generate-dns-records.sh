@@ -58,11 +58,8 @@ for record in "${RECORDS[@]}"; do
 done
 JSON+="]"
 
-# Write to extra-records.json inside the headscale container
-echo "  Writing ${#RECORDS[@]} records to /var/lib/headscale/extra-records.json"
-tmpfile="$(mktemp)"
-echo "$JSON" > "$tmpfile"
-docker compose cp "$tmpfile" headscale:/var/lib/headscale/extra-records.json 2>/dev/null
-rm -f "$tmpfile"
+# Write to extra-records.json (bind-mounted into the headscale container)
+echo "  Writing ${#RECORDS[@]} records to headscale-config/extra-records.json"
+echo "$JSON" > "headscale-config/extra-records.json"
 
 echo "  Done"

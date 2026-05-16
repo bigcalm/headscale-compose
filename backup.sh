@@ -63,6 +63,7 @@ echo "  Config:  headscale-config/ Caddyfile .env"
 tar czf "$CONFIG_ARCHIVE" \
   headscale-config/config.yaml \
   headscale-config/acl.hujson \
+  headscale-config/extra-records.json \
   Caddyfile \
   .env \
   2>/dev/null || echo "    (some config files missing — backing up what exists)"
@@ -79,7 +80,7 @@ cat > "$BACKUP_DIR/backup.json" <<EOF
     "caddy": "$CADDY_IMAGE"
   },
   "volumes": ["headscale-data", "caddy-data", "caddy-config"],
-  "config_files": ["headscale-config/config.yaml", "headscale-config/acl.hujson", "Caddyfile", ".env"]
+  "config_files": ["headscale-config/config.yaml", "headscale-config/acl.hujson", "headscale-config/extra-records.json", "Caddyfile", ".env"]
 }
 EOF
 

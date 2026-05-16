@@ -55,10 +55,12 @@ Pass-through: any unrecognised arg runs `docker compose exec headscale headscale
 ├── headscale.sh                 # Management wrapper script
 ├── backup.sh                    # Volume backup script
 ├── restore.sh                   # Volume restore script
+├── generate-dns-records.sh      # Extra DNS record generator
 ├── README.md                    # Project documentation
 ├── headscale-config/
 │   ├── config.yaml              # Headscale configuration
-│   └── acl.hujson               # ACL policy (HuJSON)
+│   ├── acl.hujson               # ACL policy (HuJSON)
+│   └── extra-records.json       # Extra DNS records (auto-generated)
 └── backups/                     # Backup archives (gitignored)
 ```
 

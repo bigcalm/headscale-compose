@@ -72,7 +72,7 @@ dns:
   # Path to a JSON file of extra A/AAAA records that headscale watches
   # for changes. Used by generate-dns-records.sh to create user-inclusive
   # FQDNs (hostname.user.base_domain).
-  extra_records_path: /var/lib/headscale/extra-records.json
+  extra_records_path: /etc/headscale/extra-records.json
 
 unix_socket: /var/run/headscale/headscale.sock
 unix_socket_permission: "0770"
