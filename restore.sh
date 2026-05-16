@@ -45,16 +45,18 @@ if [ -f "$RESTORE_SRC/backup.json" ]; then
   }
 
   # Extract resolved image tags from docker compose config
+  # Gracefully handles missing .env (fresh clone before config restore)
   current_tag() {
     docker compose config 2>/dev/null | awk -v srv="$1" '
       $0 ~ "^  " srv ":" {found=1; next}
       found && /^    image:/ {print $2; found=0}
-    '
+    ' || true
   }
 
   for svc in headscale headscale-ui caddy; do
     backup_ver="$(backup_tag "$svc")"
     current_ver="$(current_tag "$svc")"
+    [ -z "$current_ver" ] && current_ver="[none]"
     if [ "$backup_ver" = "$current_ver" ]; then
       echo "    $svc: $backup_ver  (match)"
     else
@@ -67,33 +69,9 @@ else
   echo ""
 fi
 
-# Stop services
-docker compose stop headscale caddy
-
-# Restore volumes
-echo "  --- Restoring volumes ---"
-for vol in headscale-data caddy-data caddy-config; do
-  archive="$RESTORE_SRC/${vol}.tar.gz"
-  if [ ! -f "$archive" ]; then
-    echo "    Skipping $vol — no backup file found"
-    continue
-  fi
-  echo "    Restoring $vol ..."
-
-  # Derive full volume name
-  PROJECT="$(docker compose config 2>/dev/null | awk '/^name:/{print $2}')"
-  [ -z "$PROJECT" ] && PROJECT="$(basename "$COMPOSE_DIR")"
-
-  docker run --rm \
-    -v "${PROJECT}_${vol}:/target" \
-    -v "$RESTORE_SRC:/backup" \
-    alpine tar xzf "/backup/${vol}.tar.gz" -C /target
-done
-
-# Restore config files (prompt for confirmation)
+# Restore config files FIRST (so .env is available for compose commands)
 CONFIG_ARCHIVE="$RESTORE_SRC/config.tar.gz"
 if [ -f "$CONFIG_ARCHIVE" ]; then
-  echo ""
   echo "  --- Config files ---"
   echo "    A config backup exists: headscale-config/ Caddyfile .env"
   echo "    Restoring will overwrite current files with backed-up versions."
@@ -109,6 +87,37 @@ fi
 
 echo ""
 
-docker compose start headscale caddy
+# Stop services (gracefully — may fail on fresh clone without .env)
+docker compose stop headscale caddy 2>/dev/null || true
+
+# Restore volumes
+echo "  --- Restoring volumes ---"
+for vol in headscale-data caddy-data caddy-config; do
+  archive="$RESTORE_SRC/${vol}.tar.gz"
+  if [ ! -f "$archive" ]; then
+    echo "    Skipping $vol — no backup file found"
+    continue
+  fi
+  echo "    Restoring $vol ..."
+
+  # Derive full volume name (fallback if docker compose config fails)
+  PROJECT="$(docker compose config 2>/dev/null | awk '/^name:/{print $2}' || true)"
+  [ -z "$PROJECT" ] && PROJECT="$(basename "$COMPOSE_DIR")"
+
+  docker run --rm \
+    -v "${PROJECT}_${vol}:/target" \
+    -v "$RESTORE_SRC:/backup" \
+    alpine tar xzf "/backup/${vol}.tar.gz" -C /target
+done
+
+echo ""
+
+# Create missing containers and start everything
+# (this may fail if config restore was skipped — .env is required)
+if ! docker compose up -d 2>/dev/null; then
+  echo "  warning: docker compose could not start — is .env present?"
+  echo "  Re-run with config restore, run ./headscale.sh setup,"
+  echo "  or check your .env file."
+fi
 
 echo "=== Restore complete ==="
