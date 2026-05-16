@@ -1,6 +1,8 @@
-# Change this to your actual domain (e.g., headscale.example.com)
-# The base_domain (set below) must NOT contain the server_url domain.
-server_url: https://headscale.example.com
+# Template: generated headscale configuration
+# Run ./setup.sh to generate config.yaml from .env values.
+# Edit this template for structural changes, then re-run setup.sh.
+
+server_url: {{SERVER_URL}}
 
 listen_addr: 0.0.0.0:8080
 metrics_listen_addr: 0.0.0.0:9090
@@ -62,7 +64,7 @@ dns:
   magic_dns: true
   # Must be different from the server_url domain, and the server_url
   # domain must not be a subdomain of this value.
-  base_domain: int.example.com
+  base_domain: {{BASE_DOMAIN}}
   override_local_dns: true
   nameservers:
     global:

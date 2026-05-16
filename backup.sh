@@ -59,7 +59,7 @@ backup_volume "${PROJECT}_caddy-config"   "caddy-config"
 
 # Backup config files (headscale-config/, Caddyfile, .env)
 CONFIG_ARCHIVE="$BACKUP_DIR/config.tar.gz"
-echo "  Config:  headscale-config/ Caddyfile .env"
+echo "  Config:  headscale-config/ Caddyfile .env (incl. generated extra-records.json)"
 tar czf "$CONFIG_ARCHIVE" \
   headscale-config/config.yaml \
   headscale-config/acl.hujson \

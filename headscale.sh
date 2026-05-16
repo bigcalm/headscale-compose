@@ -80,6 +80,10 @@ cmd_rebuild_dns() {
   "$COMPOSE_PROJECT_DIR/generate-dns-records.sh"
 }
 
+cmd_setup() {
+  "$COMPOSE_PROJECT_DIR/setup.sh"
+}
+
 usage() {
   cat <<EOF
 Usage: $(basename "$0") <command> [args]
@@ -104,6 +108,7 @@ Commands:
   down                    Stop all services
   restart                 Restart all services
   rebuild-dns             Regenerate extra DNS records (user-inclusive FQDNs)
+  setup                   Generate headscale config from .env + template
   version                 Show headscale version
   help                    Show this help
 
@@ -162,6 +167,9 @@ case "${1:-help}" in
     ;;
   rebuild-dns)
     cmd_rebuild_dns
+    ;;
+  setup)
+    cmd_setup
     ;;
   version)
     cmd_version

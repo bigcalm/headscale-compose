@@ -1,2 +1,4 @@
 .env
 backups/
+headscale-config/config.yaml
+headscale-config/extra-records.json
