@@ -23,10 +23,10 @@ NODES_JSON="$(docker compose exec -T headscale headscale nodes list -o json 2>/d
 # shellcheck disable=SC2207
 RECORDS=()
 while read -r node; do
-  hostname="$(echo "$node" | jq -r '.givenName // .hostname // .name' 2>/dev/null)"
+  hostname="$(echo "$node" | jq -r '.given_name // .hostname // .name' 2>/dev/null)"
   user="$(echo "$node" | jq -r '.user.name // .user // empty' 2>/dev/null)"
-  ipv4="$(echo "$node" | jq -r '.ipAddresses[0] // empty' 2>/dev/null)"
-  ipv6="$(echo "$node" | jq -r '.ipAddresses[1] // empty' 2>/dev/null)"
+  ipv4="$(echo "$node" | jq -r '.ip_addresses[0] // empty' 2>/dev/null)"
+  ipv6="$(echo "$node" | jq -r '.ip_addresses[1] // empty' 2>/dev/null)"
 
   [ -z "$hostname" ] && continue
   [ -z "$user" ] && user="default"
