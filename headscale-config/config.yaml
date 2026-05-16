@@ -69,7 +69,6 @@ dns:
       - 1.1.1.1
       - 1.0.0.1
   search_domains: []
-  extra_records: []
   # Path to a JSON file of extra A/AAAA records that headscale watches
   # for changes. Used by generate-dns-records.sh to create user-inclusive
   # FQDNs (hostname.user.base_domain).
