@@ -40,7 +40,7 @@ BASE_DOMAIN=example.com
 TZ=UTC
 HS_VERSION=v0.28.0
 UI_VERSION=2026.03.17
-CADDY_VERSION=v2.11.3
+CADDY_VERSION=2.11.3
 ```
 
 Edit `headscale-config/config.yaml` and set:
@@ -249,7 +249,7 @@ Once you know the latest versions, update `.env`:
 ```ini
 HS_VERSION=v0.29.0
 UI_VERSION=2026.04.01
-CADDY_VERSION=v2.12.0
+CADDY_VERSION=2.12.0
 ```
 
 Then pull and restart:
