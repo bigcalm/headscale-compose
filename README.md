@@ -1,6 +1,7 @@
 # headscale-compose
 
 > Created with [OpenCode](https://opencode.ai) using the **Big Pickle** model.
+>
 > I (Iain Cuthbertson) have provided requirements, project management, and code review.
 
 Self-hosted [Headscale](https://headscale.net) (Tailscale control server) with a web UI and automatic HTTPS via [Caddy](https://caddyserver.com), all running in Docker Compose.
