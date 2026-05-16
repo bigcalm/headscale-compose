@@ -20,7 +20,14 @@ cmd_exec() {
 }
 
 cmd_shell() {
-  $COMPOSE_CMD exec headscale sh
+  if $COMPOSE_CMD exec headscale bash -c 'exit 0' 2>/dev/null; then
+    $COMPOSE_CMD exec headscale bash
+  elif $COMPOSE_CMD exec headscale sh -c 'exit 0' 2>/dev/null; then
+    $COMPOSE_CMD exec headscale sh
+  else
+    echo "error: headscale container has no shell available (distroless image)"
+    return 1
+  fi
 }
 
 cmd_logs() {
@@ -70,7 +77,7 @@ cmd_version() {
 }
 
 cmd_rebuild_dns() {
-  "$COMPOSE_DIR/generate-dns-records.sh"
+  "$COMPOSE_PROJECT_DIR/generate-dns-records.sh"
 }
 
 usage() {
