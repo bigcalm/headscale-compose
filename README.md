@@ -36,7 +36,7 @@ Edit `.env` with your settings:
 
 ```ini
 DOMAIN=headscale.example.com
-BASE_DOMAIN=example.com
+BASE_DOMAIN=int.example.com
 TZ=UTC
 HS_VERSION=v0.28.0
 UI_VERSION=2026.03.17
@@ -46,7 +46,7 @@ CADDY_VERSION=2.11.3
 Edit `headscale-config/config.yaml` and set:
 
 - `server_url` — must match your domain with `https://`
-- `dns.base_domain` — used for MagicDNS hostnames; must differ from the server_url domain
+- `dns.base_domain` — used for MagicDNS hostnames; must differ from the server_url domain (the server_url domain must not be a subdomain of base_domain)
 
 ### 3. Start everything
 
@@ -215,6 +215,7 @@ The `backups/` directory is gitignored.
 ├── headscale.sh                 # Management wrapper script
 ├── backup.sh                    # Volume backup script
 ├── restore.sh                   # Volume restore script
+├── generate-dns-records.sh      # Extra DNS record generator
 ├── README.md                    # This file
 ├── headscale-config/
 │   ├── config.yaml              # Headscale configuration
@@ -224,6 +225,29 @@ The `backups/` directory is gitignored.
 
 Persistent data (SQLite database, Noise keys, TLS certificates) is stored in
 Docker named volumes (`headscale-data`, `caddy-data`, `caddy-config`).
+
+## Extra DNS records
+
+Headscale v0.23.0+ removed the `use_username_in_magic_dns` option — MagicDNS no longer
+includes the user namespace in FQDNs. The format changed from `hostname.user.base_domain`
+to `hostname.base_domain`.
+
+As a workaround, `generate-dns-records.sh` creates supplementary A/AAAA records in the
+old format via `dns.extra_records_path`. Each node gets `hostname.user.base_domain`
+entries so you can reach nodes by the old naming convention.
+
+```bash
+# After adding or removing nodes, regenerate the records
+./headscale.sh rebuild-dns
+```
+
+Headscale watches the records file for changes and picks them up within seconds — no
+restart needed. Run this script whenever your node roster changes.
+
+Caveats:
+- These are **extra** records — the built-in MagicDNS `hostname.base_domain` still exists
+- Only A and AAAA records are supported by the Tailscale client
+- The script must be run manually (or via cron) after node changes
 
 ## DERP relay
 

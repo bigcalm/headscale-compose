@@ -36,6 +36,7 @@ Use the wrapper script (avoids raw docker exec/compose exec):
 ./headscale.sh shell       # shell inside headscale container
 ./headscale.sh logs        # tail headscale logs
 ./headscale.sh logs caddy  # tail caddy logs
+./headscale.sh rebuild-dns # regenerate user-inclusive DNS records
 ./headscale.sh version
 ```
 
@@ -90,13 +91,17 @@ Backups include config files (`.env`, `Caddyfile`, `headscale-config/`) and a
 script compares these versions against the current `docker-compose.yaml` and
 warns on mismatch.
 
+## Extra DNS records
+
+`generate-dns-records.sh` creates `hostname.user.base_domain` A/AAAA records
+via `dns.extra_records_path` (since headscale v0.23.0 removed the username
+from MagicDNS). Run `./headscale.sh rebuild-dns` after node changes.
+
 ## Common errors
 
 | Error | Fix |
 |---|---|
 | `DOMAIN is missing a value` | Create `.env` from `.env.example` and set `DOMAIN` |
 | `Volume does not exist` | Run `docker compose up -d` first to create volumes |
-| Nodes can't connect | Ensure DNS A record points to the server and Cloudflare proxy is off |
-| Web UI shows blank page | Generate an API key (`./headscale.sh apikey`) and paste it in Settings |
 | Nodes can't connect | Ensure DNS A record points to the server and Cloudflare proxy is off |
 | Web UI shows blank page | Generate an API key (`./headscale.sh apikey`) and paste it in Settings |

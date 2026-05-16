@@ -1,4 +1,5 @@
 # Change this to your actual domain (e.g., headscale.example.com)
+# The base_domain (set below) must NOT contain the server_url domain.
 server_url: https://headscale.example.com
 
 listen_addr: 0.0.0.0:8080
@@ -59,8 +60,9 @@ policy:
 
 dns:
   magic_dns: true
-  # Must be different from the server_url domain
-  base_domain: example.com
+  # Must be different from the server_url domain, and the server_url
+  # domain must not be a subdomain of this value.
+  base_domain: int.example.com
   override_local_dns: true
   nameservers:
     global:
@@ -68,6 +70,10 @@ dns:
       - 1.0.0.1
   search_domains: []
   extra_records: []
+  # Path to a JSON file of extra A/AAAA records that headscale watches
+  # for changes. Used by generate-dns-records.sh to create user-inclusive
+  # FQDNs (hostname.user.base_domain).
+  extra_records_path: /var/lib/headscale/extra-records.json
 
 unix_socket: /var/run/headscale/headscale.sock
 unix_socket_permission: "0770"

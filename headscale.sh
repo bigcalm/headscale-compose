@@ -69,6 +69,10 @@ cmd_version() {
   cmd_exec version
 }
 
+cmd_rebuild_dns() {
+  "$COMPOSE_DIR/generate-dns-records.sh"
+}
+
 usage() {
   cat <<EOF
 Usage: $(basename "$0") <command> [args]
@@ -92,6 +96,7 @@ Commands:
   up                      Start all services (docker compose up -d)
   down                    Stop all services
   restart                 Restart all services
+  rebuild-dns             Regenerate extra DNS records (user-inclusive FQDNs)
   version                 Show headscale version
   help                    Show this help
 
@@ -147,6 +152,9 @@ case "${1:-help}" in
   preauthkey)
     shift
     cmd_preauthkey "$@"
+    ;;
+  rebuild-dns)
+    cmd_rebuild_dns
     ;;
   version)
     cmd_version
