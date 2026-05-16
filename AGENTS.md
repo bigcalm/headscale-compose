@@ -64,6 +64,7 @@ Pass-through: any unrecognised arg runs `docker compose exec headscale headscale
 
 ## Conventions
 
+- **Never commit changes unless the user explicitly asks.** Do not make SCM commits proactively — only when requested.
 - **Config is bind-mounted read-only** — headscale config lives in `headscale-config/` and is mounted at `/etc/headscale` with `:ro`.
 - **Data is stored in Docker named volumes** — `headscale-data`, `caddy-data`, `caddy-config`. Use `backup.sh` / `restore.sh` to save/restore them.
 - **headscale-ui** is served at `/web` on the same domain as headscale.
