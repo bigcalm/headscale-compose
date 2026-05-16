@@ -13,3 +13,20 @@ Container image versions can be set via environment variable. Let's move these t
 * Is "dns.extra_records_path" an option?
 * Let's try that. Though it might be backed out if deemed convoluted.
 * Update the agent documentation to ensure that SCM commits are never made unless the user requests it.
+* Check headscale.sh for errors (I had spotted an error and I wanted to see if the agent found it in review of its own code)
+* Update cmd_shell to prefer `bash` over `sh`
+* On my remote server - Using the "rebuild-dns" command resulted in no nodes being found "No nodes found — writing empty record set". But running "/headscale.sh node list" shows one node: [Pasted ~3 lines]
+* [Pasted ~55 lines]
+* I ran "host <hostname>" locally and got a failed result: [Pasted ~3 lines]
+* [Pasted ~4 lines]
+* Same error after restarting the container: Host iain-t480s.mobile.int.example.com not found: 3(NXDOMAIN)
+* Local test confirms that this is now working: [Pasted ~5 lines]
+* The @AGENTS.md files strictly forbids automatic SCM (git) commits. Why did you commit this change without being instructed to do so?
+* We can keep the commit. Please be more careful.
+* Does the "/var/lib/headscale/extra-records.json" file get created in the "headscale" container by default, or is it only after running the "rebuild-dns" command? If it is the latter, will the reference in the config break the system if the file does not exist? Can we cater for this, if it's an issue?
+* Please implement this. And include the config within the backup/restore scripts.
+* The docker-compose.yml file has the bound volume mount "./headscale-config/extra-records.json:/etc/headscale/extra-records.json". Should this be read-only, like the main config?
+* Does the documentation need to be updated?
+* update them
+* Let's improve the set-up process. At the moment a user has to copy .env.example to .env and then make changes to .env. This is good and standard practice. The set-up process also requires manual changes to the headscale config file. This is a file that is under SCM. If the user has made changes to the file and later runs "git pull", they might get an error about conflicting changes. I considered if we should have another ".example" file for the config that the user copies and edits. But how about we have a bash script that parses the values in .env and creates the headscale config itself? Is this taking abstraction a little too far?
+* Go ahead
